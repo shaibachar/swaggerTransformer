@@ -4,7 +4,7 @@ This project transforms Swagger/OpenAPI specifications into WireMock mappings fo
 
 ## Overview
 
-The script `swaggerTransformer.py` reads a Swagger/OpenAPI specification file (`swagger.yaml`), validates it, and generates WireMock mapping files for mocking API responses. It supports both OpenAPI 3.0 and Swagger 2.0 specifications.
+The script `swaggerTransformer.py` reads all Swagger/OpenAPI specification files from the `swaggers` directory, validates them, and generates WireMock mapping files for mocking API responses. It supports both OpenAPI 3.0 and Swagger 2.0 specifications.
 
 ## Features
 
@@ -21,7 +21,7 @@ The script `swaggerTransformer.py` reads a Swagger/OpenAPI specification file (`
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/shaibachar/swagger-to-wiremock-transformer.git
+    git clone https://github.com/your-username/swagger-to-wiremock-transformer.git
     cd swagger-to-wiremock-transformer
     ```
 
@@ -38,7 +38,7 @@ The script `swaggerTransformer.py` reads a Swagger/OpenAPI specification file (`
 
 ## Usage
 
-1. **Place your Swagger/OpenAPI specification file** (`swagger.yaml`) in the project directory.
+1. **Place your Swagger/OpenAPI specification files** (`.yaml`) in the `swaggers` directory.
 
 2. **Run the script to generate WireMock mappings**:
     ```bash
@@ -85,9 +85,9 @@ The Dockerfile included in the project performs the following actions:
 
 This script performs the following steps:
 
-1. **Load OpenAPI/Swagger Specification**: Reads the `swagger.yaml` file.
-2. **Validate Specification**: Ensures the specification is valid using `prance`.
-3. **Generate Example Responses**: Parses the specification to generate example responses for the API endpoints.
+1. **Load OpenAPI/Swagger Specification**: Reads the `.yaml` files from the `swaggers` directory.
+2. **Validate Specification**: Ensures the specifications are valid using `prance`.
+3. **Generate Example Responses**: Parses the specifications to generate example responses for the API endpoints.
 4. **Generate WireMock Mappings**: Creates WireMock mappings with the generated responses and saves them in the `mappings` directory.
 
 ### Functions
@@ -97,6 +97,7 @@ This script performs the following steps:
 - **resolve_schema(schema, openapi_spec)**: Resolves `$ref` references within the specification.
 - **generate_example_from_schema(schema, openapi_spec)**: Generates example data based on the given schema.
 - **generate_wiremock_mappings(openapi_spec)**: Generates WireMock mappings from the specification.
+- **process_swagger_files()**: Processes all Swagger/OpenAPI files in the `swaggers` directory and generates mappings.
 
 ## License
 

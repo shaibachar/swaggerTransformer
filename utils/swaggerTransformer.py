@@ -1,6 +1,7 @@
 import yaml
 import json
 import os
+import glob
 from prance import ResolvingParser
 from prance.util.url import ResolutionError
 from faker import Faker
@@ -14,21 +15,21 @@ def load_openapi_spec(file_path):
             openapi_spec = yaml.safe_load(file)
         return openapi_spec
     except Exception as e:
-        print(f"Failed to load the OpenAPI spec: {e}")
-        exit(1)
+        print(f"Failed to load the OpenAPI spec from {file_path}: {e}")
+        return None
 
 def validate_openapi_spec(file_path):
     try:
         parser = ResolvingParser(file_path, resolve_refs=True, strict=False)
         spec = parser.specification
-        print("OpenAPI spec is valid.")
+        print(f"OpenAPI spec {file_path} is valid.")
         return spec
     except ResolutionError as e:
-        print(f"OpenAPI spec is invalid: {e}")
-        exit(1)
+        print(f"OpenAPI spec {file_path} is invalid: {e}")
+        return None
     except Exception as e:
-        print(f"An error occurred: {e}")
-        exit(1)
+        print(f"An error occurred while validating {file_path}: {e}")
+        return None
 
 def resolve_schema(schema, openapi_spec):
     if '$ref' in schema:
@@ -112,18 +113,29 @@ def generate_wiremock_mappings(openapi_spec):
                     mappings.append(mapping)
     return mappings
 
-if __name__ == "__main__":
-    file_path = 'swagger.yaml'
-    openapi_spec = load_openapi_spec(file_path)
-    openapi_spec = validate_openapi_spec(file_path)
-    wiremock_mappings = generate_wiremock_mappings(openapi_spec)
+def process_swagger_files():
+    input_folder = 'swaggers'
+    output_folder = 'mappings'
 
     # Ensure the mappings directory exists
-    os.makedirs('mappings', exist_ok=True)
+    os.makedirs(output_folder, exist_ok=True)
 
-    # Save mappings to files
-    for i, mapping in enumerate(wiremock_mappings):
-        with open(f'mappings/mapping_{i}.json', 'w') as file:
-            json.dump(mapping, file, indent=4)
+    swagger_files = glob.glob(os.path.join(input_folder, '*.yaml'))
+
+    for file_path in swagger_files:
+        openapi_spec = load_openapi_spec(file_path)
+        if openapi_spec:
+            validated_spec = validate_openapi_spec(file_path)
+            if validated_spec:
+                wiremock_mappings = generate_wiremock_mappings(validated_spec)
+
+                # Save mappings to files
+                for i, mapping in enumerate(wiremock_mappings):
+                    mapping_file = os.path.join(output_folder, f'{os.path.splitext(os.path.basename(file_path))[0]}_mapping_{i}.json')
+                    with open(mapping_file, 'w') as file:
+                        json.dump(mapping, file, indent=4)
 
     print("Mappings generated successfully.")
+
+if __name__ == "__main__":
+    process_swagger_files()

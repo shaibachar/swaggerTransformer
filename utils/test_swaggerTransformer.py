@@ -3,7 +3,7 @@ from unittest.mock import patch, mock_open
 import yaml
 import json
 import os
-from swaggerTransformer import load_openapi_spec, validate_openapi_spec, generate_wiremock_mappings, generate_example_from_schema
+from swaggerTransformer import load_openapi_spec, validate_openapi_spec, generate_wiremock_mappings, generate_example_from_schema, process_swagger_files
 
 class TestSwaggerTransformer(unittest.TestCase):
     
@@ -281,6 +281,19 @@ definitions:
             self.assertIn('request', mapping)
             self.assertIn('response', mapping)
             self.assertIn('jsonBody', mapping['response'])
+
+    @patch('swaggerTransformer.glob.glob', return_value=['swaggers/swagger1.yaml', 'swaggers/swagger2.yaml'])
+    @patch('swaggerTransformer.load_openapi_spec')
+    @patch('swaggerTransformer.validate_openapi_spec')
+    @patch('swaggerTransformer.generate_wiremock_mappings')
+    def test_process_swagger_files(self, mock_generate_mappings, mock_validate_spec, mock_load_spec, mock_glob):
+        mock_load_spec.return_value = self.sample_openapi_3_spec_dict
+        mock_validate_spec.return_value = self.sample_openapi_3_spec_dict
+        mock_generate_mappings.return_value = [{"request": {}, "response": {}}]
+
+        process_swagger_files()
+        mock_glob.assert_called_with('swaggers/*.yaml')
+        self.assertTrue(os.path.exists('mappings'))
 
 if __name__ == '__main__':
     unittest.main()

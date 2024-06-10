@@ -1,0 +1,13 @@
+{
+    "request": {
+        "method": "DELETE",
+        "urlPath": "/customers/{customerId}"
+    },
+    "response": {
+        "status": 204,
+        "jsonBody": {},
+        "transformers": [
+            "response-template"
+        ]
+    }
+}
