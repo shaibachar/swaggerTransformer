@@ -1,111 +1,105 @@
-openapi: 3.0.0
+swagger: "2.0"
 info:
-  title: Customer API
-  version: 1.0.0
-  description: A simple API to manage customers
+  version: "1.0.0"
+  title: "Customer API"
+  description: "A simple API to manage customers"
+host: "example.com"
+basePath: "/"
+schemes:
+  - "https"
 paths:
   /customers:
     get:
-      summary: Get a list of customers
+      summary: "Get a list of customers"
       responses:
-        '200':
-          description: A list of customers
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Customer'
+        200:
+          description: "A list of customers"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Customer"
     post:
-      summary: Create a new customer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NewCustomer'
+      summary: "Create a new customer"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/NewCustomer"
       responses:
-        '201':
-          description: Customer created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Customer'
+        201:
+          description: "Customer created successfully"
+          schema:
+            $ref: "#/definitions/Customer"
   /customers/{customerId}:
     get:
-      summary: Get a customer by ID
+      summary: "Get a customer by ID"
       parameters:
-        - in: path
-          name: customerId
+        - name: "customerId"
+          in: "path"
           required: true
-          schema:
-            type: string
+          type: "string"
       responses:
-        '200':
-          description: A customer
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Customer'
-        '404':
-          description: Customer not found
+        200:
+          description: "A customer"
+          schema:
+            $ref: "#/definitions/Customer"
+        404:
+          description: "Customer not found"
     delete:
-      summary: Delete a customer by ID
+      summary: "Delete a customer by ID"
       parameters:
-        - in: path
-          name: customerId
+        - name: "customerId"
+          in: "path"
           required: true
-          schema:
-            type: string
+          type: "string"
       responses:
-        '204':
-          description: Customer deleted successfully
-        '404':
-          description: Customer not found
-
-components:
-  schemas:
-    Customer:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "12345"
-        name:
-          type: string
-          example: "John Doe"
-        email:
-          type: string
-          example: "johndoe@example.com"
-        phone:
-          type: string
-          example: "+1-555-555-5555"
-        address:
-          type: string
-          example: "123 Main St, Anytown, USA"
-        activateDate:
-          type: string
-          format: date
-          example: "2023-06-10"
-    NewCustomer:
-      type: object
-      required:
-        - name
-        - email
-      properties:
-        name:
-          type: string
-          example: "John Doe"
-        email:
-          type: string
-          example: "johndoe@example.com"
-        phone:
-          type: string
-          example: "+1-555-555-5555"
-        address:
-          type: string
-          example: "123 Main St, Anytown, USA"
-        activateDate:
-          type: string
-          format: date
-          example: "2023-06-10"
+        204:
+          description: "Customer deleted successfully"
+        404:
+          description: "Customer not found"
+definitions:
+  Customer:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "12345"
+      name:
+        type: "string"
+        example: "John Doe"
+      email:
+        type: "string"
+        example: "johndoe@example.com"
+      phone:
+        type: "string"
+        example: "+1-555-555-5555"
+      address:
+        type: "string"
+        example: "123 Main St, Anytown, USA"
+      activateDate:
+        type: "string"
+        format: "date"
+        example: "2023-06-10"
+  NewCustomer:
+    type: "object"
+    required:
+      - name
+      - email
+    properties:
+      name:
+        type: "string"
+        example: "John Doe"
+      email:
+        type: "string"
+        example: "johndoe@example.com"
+      phone:
+        type: "string"
+        example: "+1-555-555-5555"
+      address:
+        type: "string"
+        example: "123 Main St, Anytown, USA"
+      activateDate:
+        type: "string"
+        format: "date"
+        example: "2023-06-10"

@@ -19,7 +19,7 @@ def load_openapi_spec(file_path):
 
 def validate_openapi_spec(file_path):
     try:
-        parser = ResolvingParser(file_path, resolve_refs=True)
+        parser = ResolvingParser(file_path, resolve_refs=True, strict=False)
         spec = parser.specification
         print("OpenAPI spec is valid.")
         return spec
@@ -85,30 +85,37 @@ def generate_example_from_schema(schema, openapi_spec):
         return None
 
 def generate_wiremock_mappings(openapi_spec):
+    paths = openapi_spec.get('paths', {})
+    components = openapi_spec.get('definitions', {}) if 'swagger' in openapi_spec and openapi_spec['swagger'] == '2.0' else openapi_spec.get('components', {}).get('schemas', {})
+    
     mappings = []
-    for path, methods in openapi_spec['paths'].items():
+    for path, methods in paths.items():
         for method, details in methods.items():
-            response_schema = details.get('responses', {}).get('200', {}).get('content', {}).get('application/json', {}).get('schema', {})
-            example_response = generate_example_from_schema(response_schema, openapi_spec) if response_schema else {}
-            print(f"Generated example response for {method} {path}: {example_response}")
-            mapping = {
-                "request": {
-                    "method": method.upper(),
-                    "urlPath": path
-                },
-                "response": {
-                    "status": 200,
-                    "jsonBody": example_response,
-                    "transformers": ["response-template"]
-                }
-            }
-            mappings.append(mapping)
+            responses = details.get('responses', {})
+            for status, response in responses.items():
+                status_str = str(status)
+                if status_str.startswith('2'):  # Match 2xx status codes
+                    response_schema = response.get('schema', {})
+                    example_response = generate_example_from_schema(response_schema, openapi_spec) if response_schema else {}
+                    print(f"Generated example response for {method} {path}: {example_response}")
+                    mapping = {
+                        "request": {
+                            "method": method.upper(),
+                            "urlPath": path
+                        },
+                        "response": {
+                            "status": int(status_str),
+                            "jsonBody": example_response,
+                            "transformers": ["response-template"]
+                        }
+                    }
+                    mappings.append(mapping)
     return mappings
 
 if __name__ == "__main__":
     file_path = 'swagger.yaml'
     openapi_spec = load_openapi_spec(file_path)
-    validate_openapi_spec(file_path)
+    openapi_spec = validate_openapi_spec(file_path)
     wiremock_mappings = generate_wiremock_mappings(openapi_spec)
 
     # Ensure the mappings directory exists

@@ -4,7 +4,7 @@
         "urlPath": "/customers/{customerId}"
     },
     "response": {
-        "status": 200,
+        "status": 204,
         "jsonBody": {},
         "transformers": [
             "response-template"
