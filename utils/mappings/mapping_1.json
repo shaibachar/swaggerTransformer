@@ -1,0 +1,13 @@
+{
+    "request": {
+        "method": "POST",
+        "urlPath": "/customers"
+    },
+    "response": {
+        "status": 200,
+        "jsonBody": {},
+        "transformers": [
+            "response-template"
+        ]
+    }
+}

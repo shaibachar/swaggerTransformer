@@ -1,0 +1,22 @@
+{
+    "request": {
+        "method": "GET",
+        "urlPath": "/customers"
+    },
+    "response": {
+        "status": 200,
+        "jsonBody": [
+            {
+                "id": "12345",
+                "name": "John Doe",
+                "email": "johndoe@example.com",
+                "phone": "+1-555-555-5555",
+                "address": "123 Main St, Anytown, USA",
+                "activateDate": "{{now format='yyyy-MM-dd'}}"
+            }
+        ],
+        "transformers": [
+            "response-template"
+        ]
+    }
+}
